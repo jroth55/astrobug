@@ -294,3 +294,19 @@ npx wrangler pages deploy ./dist
 - **Sessions**: Prefer `Astro.session`. Use KV directly only for specialized needs (shared/non-session data, custom TTLs beyond sessions).
 - **Env access**: Use `astro:env/server` for secrets; avoid ad hoc env plumbing through locals.
 - **Node compat**: Enable `nodejs_compat` (and `nodejs_compat_v2` if you need broader polyfills) when using Node APIs.
+
+
+## Patterns vs. Anti-Patterns (do this, not that)
+- Use static-first with per-page SSR (`export const prerender = false`) rather than forcing `output: 'server'` unless most pages are dynamic.
+- Prefer `@tailwindcss/vite` + CSS-first `@theme`; avoid `@astrojs/tailwind` and tailwind.config.js for v4.
+- Use `wrangler.jsonc` for Cloudflare Pages with schema validation; avoid `wrangler.toml` unless intentionally targeting a Worker service.
+- Pin `@astrojs/cloudflare` >= 12.6.6; do not stay on 11.0.3–12.6.5 (CVE-2025-58179).
+- Choose `passthrough` or `cloudflare` image services when you do not need Sharp in-worker; avoid `compile` if bundle size or SSRF risk is a concern.
+- Use `Astro.session.get/set` for sessions; avoid rolling your own session KV unless you need custom semantics.
+- Use `astro:env/server` for secrets; avoid plumbing env through locals manually.
+- Keep Server Island props small to stay on GET; avoid large props that force POST unless necessary.
+- Set cache headers for SSR pages (ISR-like) explicitly; avoid relying on defaults.
+- Enable `nodejs_compat` (and optionally `_v2`) when using Node APIs; avoid relying on implicit polyfills.
+- Keep `_headers` and `.assetsignore` in `public/`; avoid serving Worker artifacts as static files.
+- Use platformProxy for local parity; avoid double-running separate dev servers for bindings.
+
