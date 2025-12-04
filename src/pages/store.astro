@@ -1,0 +1,16 @@
+---
+export const prerender = true;
+import BaseLayout from '../layouts/BaseLayout.astro';
+import UserWidget from '../components/UserWidget.astro';
+---
+<BaseLayout title="Store">
+  <header class="flex justify-between items-center px-4 py-4 border-b">
+    <h1 class="text-2xl font-bold">Store</h1>
+    <UserWidget server:defer>
+      <div slot="fallback" class="animate-pulse bg-gray-200 rounded-full w-10 h-10" />
+    </UserWidget>
+  </header>
+  <main class="container mx-auto px-4 py-8">
+    <p>This static content loads instantly from CDN.</p>
+  </main>
+</BaseLayout>

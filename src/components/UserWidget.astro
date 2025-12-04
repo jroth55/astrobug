@@ -1,0 +1,18 @@
+---
+const session = await Astro.session.get('user');
+const { env } = Astro.locals.runtime;
+const user = session?.id ? await env.CACHE.get(`user:${session.id}`, 'json') : null;
+Astro.response.headers.set('Cache-Control', 'max-age=60');
+---
+<div class="flex items-center gap-2">
+  {user ? (
+    <>
+      <img src={user.avatar} alt="" class="w-10 h-10 rounded-full" />
+      <span class="text-sm font-medium">{user.name}</span>
+    </>
+  ) : (
+    <a href="/login" class="text-primary hover:underline">Sign in</a>
+  )}
+</div>
+
+The `slot="fallback"` content provided by the parent renders before this island fetches. Keep island props small to stay on GET requests; large props (> ~2 KB) switch to POST and bypass cache.
