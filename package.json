@@ -1,0 +1,25 @@
+{
+  "name": "astrobug",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Minimal Astro project deployed on Cloudflare",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "wrangler dev",
+    "check": "astro check"
+  },
+  "keywords": [
+    "astro",
+    "cloudflare"
+  ],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@astrojs/check": "^0.9.6",
+    "@astrojs/cloudflare": "^12.6.12",
+    "astro": "^5.16.4",
+    "typescript": "^5.9.3",
+    "wrangler": "^4.52.1"
+  }
+}
