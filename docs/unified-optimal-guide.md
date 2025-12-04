@@ -1,12 +1,12 @@
-# Astro + Cloudflare Pages + Tailwind v4 — Unified Optimal Guide (Astro 5.6+)
+# Astro + Cloudflare Pages + Tailwind v4 — Unified Optimal Guide (Astro 5.16+)
 
 This merges the best parts of previous guides and drops non-optimal/deprecated patterns. Use as the single baseline for new projects.
 
 ## Stack Baseline
-- Astro 5.6+ (static-first; per-page SSR via `export const prerender = false`)
+- Astro 5.16+ (static-first; per-page SSR via `export const prerender = false`)
 - Tailwind v4 with `@tailwindcss/vite` (CSS-first `@theme`, no JS config)
 - Cloudflare Pages + `wrangler.jsonc`
-- Cloudflare adapter `@astrojs/cloudflare` **>= 12.6.6** (CVE-2025-58179 patched)
+- Cloudflare adapter `@astrojs/cloudflare` **>= 12.6.12** (CVE-2025-58179 patched)
 - Local dev: `platformProxy` enabled
 - Sessions/env: built-in `Astro.session` and `astro:env/server`
 
@@ -43,15 +43,15 @@ package.json
     "deploy": "astro build && wrangler pages deploy ./dist"
   },
   "dependencies": {
-    "astro": "^5.0.0",
-    "@astrojs/cloudflare": "^12.6.6",
-    "@astrojs/check": "^0.9.0"
+    "astro": "^5.16.4",
+    "@astrojs/cloudflare": "^12.6.12",
+    "@astrojs/check": "^0.9.6"
   },
   "devDependencies": {
-    "tailwindcss": "^4.0.0",
-    "@tailwindcss/vite": "^4.0.0",
-    "typescript": "^5.6.0",
-    "wrangler": "^3.0.0"
+    "tailwindcss": "^4.1.17",
+    "@tailwindcss/vite": "^4.1.17",
+    "typescript": "^5.9.3",
+    "wrangler": "^4.52.1"
   }
 }
 ```
@@ -69,8 +69,7 @@ export default defineConfig({
       configPath: 'wrangler.jsonc',
       persist: { path: './.wrangler/state/v3' }
     },
-    imageService: 'compile', // see image notes below
-    sessionKVBindingName: 'SESSION' // optional; Astro.session is preferred
+    imageService: 'compile' // see image notes below
   }),
   vite: {
     plugins: [tailwindcss()],
@@ -80,7 +79,7 @@ export default defineConfig({
 ```
 
 ### Security and image notes
-- **CVE-2025-58179**: Use `@astrojs/cloudflare` **>= 12.6.6**. Restrict `image.domains`/`remotePatterns` for user-supplied URLs.
+- **CVE-2025-58179**: Use `@astrojs/cloudflare` **>= 12.6.12**. Restrict `image.domains`/`remotePatterns` for user-supplied URLs.
 - Choose image service based on needs:
   - `passthrough`: safest/minimal when you do not need on-demand optimization.
   - `cloudflare`: uses Cloudflare Image Resizing (paid) and avoids Sharp bloat.
@@ -129,23 +128,13 @@ export default defineConfig({
   "compatibility_date": "2025-01-15",
   "compatibility_flags": ["nodejs_compat"],
   "vars": { "ENVIRONMENT": "production" },
-  "kv_namespaces": [
-    { "binding": "CACHE", "id": "<KV_NAMESPACE_ID>" },
-    { "binding": "SESSION", "id": "<SESSION_NAMESPACE_ID>" }
-  ],
-  "d1_databases": [
-    { "binding": "DB", "database_name": "app-db", "database_id": "<DATABASE_ID>" }
-  ],
-  "r2_buckets": [
-    { "binding": "ASSETS", "bucket_name": "app-assets" }
-  ],
   "env": {
     "preview": { "vars": { "ENVIRONMENT": "preview" } }
   }
 }
 ```
 - Node polyfills: `nodejs_compat` (optionally `nodejs_compat_v2`) adds ~200 KB.
-- Nuance: Use JSONC for schema validation and Pages. Use toml only if you deliberately target Worker service mode.
+- Nuance: Use JSONC for schema validation and Pages. Add KV/D1/R2 bindings only when needed.
 
 ## Typings and Astro 5.6+ sessions/env
 ```ts
@@ -300,7 +289,7 @@ npx wrangler pages deploy ./dist
 - Use static-first with per-page SSR (`export const prerender = false`) rather than forcing `output: 'server'` unless most pages are dynamic.
 - Prefer `@tailwindcss/vite` + CSS-first `@theme`; avoid `@astrojs/tailwind` and tailwind.config.js for v4.
 - Use `wrangler.jsonc` for Cloudflare Pages with schema validation; avoid `wrangler.toml` unless intentionally targeting a Worker service.
-- Pin `@astrojs/cloudflare` >= 12.6.6; do not stay on 11.0.3–12.6.5 (CVE-2025-58179).
+- Pin `@astrojs/cloudflare` >= 12.6.12; do not stay on 11.0.3–12.6.5 (CVE-2025-58179).
 - Choose `passthrough` or `cloudflare` image services when you do not need Sharp in-worker; avoid `compile` if bundle size or SSRF risk is a concern.
 - Use `Astro.session.get/set` for sessions; avoid rolling your own session KV unless you need custom semantics.
 - Use `astro:env/server` for secrets; avoid plumbing env through locals manually.
@@ -309,4 +298,3 @@ npx wrangler pages deploy ./dist
 - Enable `nodejs_compat` (and optionally `_v2`) when using Node APIs; avoid relying on implicit polyfills.
 - Keep `_headers` and `.assetsignore` in `public/`; avoid serving Worker artifacts as static files.
 - Use platformProxy for local parity; avoid double-running separate dev servers for bindings.
-
