@@ -1,11 +1,11 @@
 ---
 export const prerender = false;
 import BaseLayout from '../../layouts/BaseLayout.astro';
-const { slug } = Astro.params;
+const { reference } = Astro.params;
 ---
-<BaseLayout title="Blog Post">
+<BaseLayout title="Invoice Reference">
   <main class="container mx-auto px-4 py-16 space-y-4">
-    <h1 class="text-3xl font-bold">Blog Post</h1>
-    <p>Blog post placeholder</p>
+    <h1 class="text-3xl font-bold">Invoice Reference</h1>
+    <p>Invoice reference placeholder</p>
   </main>
 </BaseLayout>

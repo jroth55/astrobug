@@ -1,4 +1,2 @@
 export const prerender = false;
-export async function GET() {
-  return Response.json({ status: 'ok', ts: Date.now() });
-}
+export async function GET() { return Response.json({ ok: true, route: 'health' }); }
