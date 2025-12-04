@@ -1,5 +1,6 @@
 # astrobug
 
-## Claude Scaffolding Guide
+## Guides
 
-Minimal Astro + Cloudflare Pages + Tailwind v4 scaffold: `docs/claude-guide.md`.
+- Unified optimal Astro + Cloudflare Pages + Tailwind v4 guide: `docs/unified-optimal-guide.md`.
+- Claude Scaffolding Guide (detailed scaffold): `docs/claude-guide.md`.
