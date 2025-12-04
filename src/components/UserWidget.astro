@@ -1,14 +1,13 @@
 ---
-const session = await Astro.session.get('user');
-const { env } = Astro.locals.runtime;
-const user = session?.id ? await env.CACHE.get(`user:${session.id}`, 'json') : null;
-Astro.response.headers.set('Cache-Control', 'max-age=60');
+const user = null as { name: string; avatar: string } | null;
+const userName = user?.name ?? null;
+const userAvatar = user?.avatar ?? null;
 ---
 <div class="flex items-center gap-2">
-  {user ? (
+  {userName && userAvatar ? (
     <>
-      <img src={user.avatar} alt="" class="w-10 h-10 rounded-full" />
-      <span class="text-sm font-medium">{user.name}</span>
+      <img src={userAvatar} alt="" class="w-10 h-10 rounded-full" />
+      <span class="text-sm font-medium">{userName}</span>
     </>
   ) : (
     <a href="/login" class="text-primary hover:underline">Sign in</a>

@@ -2,9 +2,7 @@
 export const prerender = false;
 import BaseLayout from '../layouts/BaseLayout.astro';
 
-const session = await Astro.session.get('user');
-const { env } = Astro.locals.runtime;
-const userData = session?.id ? await env.CACHE.get(`user:${session.id}`, 'json') : null;
+const userData = { name: 'Guest' };
 ---
 <BaseLayout title="Dashboard">
   <main class="container mx-auto px-4 py-16">

@@ -11,7 +11,6 @@ export default defineConfig({
     },
     // Default to compile-time images; switch to 'passthrough' or 'cloudflare' if desired.
     imageService: 'compile',
-    sessionKVBindingName: 'SESSION',
   }),
   vite: {
     plugins: [tailwindcss()],

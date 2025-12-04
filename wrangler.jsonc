@@ -5,16 +5,6 @@
   "compatibility_date": "2025-01-15",
   "compatibility_flags": ["nodejs_compat"],
   "vars": { "ENVIRONMENT": "production" },
-  "kv_namespaces": [
-    { "binding": "CACHE", "id": "<KV_NAMESPACE_ID>" },
-    { "binding": "SESSION", "id": "<SESSION_NAMESPACE_ID>" }
-  ],
-  "d1_databases": [
-    { "binding": "DB", "database_name": "app-db", "database_id": "<DATABASE_ID>" }
-  ],
-  "r2_buckets": [
-    { "binding": "ASSETS", "bucket_name": "app-assets" }
-  ],
   "env": {
     "preview": { "vars": { "ENVIRONMENT": "preview" } }
   }
