@@ -48,7 +48,7 @@ Tailwind v4 uses the `@tailwindcss/vite` plugin; `@astrojs/tailwind` is deprecat
   },
   "dependencies": {
     "astro": "^5.0.0",
-    "@astrojs/cloudflare": "^12.0.0",
+    "@astrojs/cloudflare": "^12.6.6",
     "@astrojs/check": "^0.9.0"
   },
   "devDependencies": {
@@ -93,6 +93,8 @@ export default defineConfig({
   },
 });
 ```
+
+Security note (CVE-2025-58179, May 2025): @astrojs/cloudflare 11.0.3 through 12.6.5 has an image service SSRF vulnerability. Use 12.6.6 or later, restrict `image.domains` or `image.remotePatterns` if you accept user-supplied URLs, and consider `imageService: 'passthrough'` (or `imageService: 'cloudflare'` for paid Image Resizing) when on-demand optimization is not required. Compile-time image optimization adds roughly 12-15 MB to the worker bundle; paid plans are recommended if you keep Sharp in the worker.
 
 ### Output mode decision matrix
 
@@ -189,6 +191,8 @@ Tailwind v4 removes `tailwind.config.js`; configure in CSS with `@theme`.
 }
 ```
 
+Astro 5.6+ includes first-class sessions on Cloudflare Pages; you do not need a dedicated KV binding to store session data when using `Astro.session`.
+
 ---
 
 ## TypeScript configuration and Cloudflare bindings
@@ -209,6 +213,27 @@ type Runtime = import("@astrojs/cloudflare").Runtime<ENV>;
 
 declare namespace App {
   interface Locals extends Runtime {}
+}
+```
+
+Astro 5.6+ sessions and env access:
+- Sessions are first-class; no KV binding required. Use `Astro.session.get()` and `Astro.session.set()` in server code:
+
+```js
+// In a server page or endpoint
+const session = await Astro.session.get('user');
+await Astro.session.set('user', { id: 123, name: 'Alice' });
+```
+
+- Env variables and secrets are globally accessible via `astro:env/server` in server code:
+
+```js
+import { getSecret } from 'astro:env/server';
+
+export const prerender = false;
+export default async function () {
+  const apiKey = await getSecret('API_KEY');
+  // use apiKey
 }
 ```
 
@@ -269,6 +294,8 @@ const userData = await env.CACHE.get(`user:${session}`, 'json');
   </main>
 </BaseLayout>
 ```
+
+Tip: In Astro 5.6+, prefer `Astro.session.get()` and `Astro.session.set()` for built-in session storage instead of manual KV reads.
 
 ### ISR-like behavior via cache headers
 
@@ -340,6 +367,8 @@ Astro.response.headers.set('Cache-Control', 'max-age=60');
   )}
 </div>
 ```
+
+The `slot="fallback"` content renders before the island fetches. Props larger than roughly 2 KB automatically switch to POST for hydration, which browsers do not cache; keep props small when you want cache-friendly GET behavior.
 
 ---
 
@@ -415,6 +444,7 @@ export async function GET({ locals }: APIContext) {
 ## Edge runtime limitations to consider
 - No filesystem access; use KV, R2, or D1 instead of `fs`.
 - Limited Node.js APIs; use `node:*` imports and list them under `vite.ssr.external`.
+- For polyfills, enable `nodejs_compat` (and optionally `nodejs_compat_v2` via Wrangler) which adds roughly 200 KB for broader Node support.
 - Worker bundle size limits: about 1 MB free tier, 10 MB paid.
 - CPU time: about 50 ms free tier, 30 seconds paid per request.
 - Sharp is incompatible; keep `imageService: 'compile'` or `passthrough`.
