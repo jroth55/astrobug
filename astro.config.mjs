@@ -1,6 +1,7 @@
 import { defineConfig } from 'astro/config';
 import cloudflare from '@astrojs/cloudflare';
 import react from '@astrojs/react';
+import sitemap from '@astrojs/sitemap';
 import tailwindcss from '@tailwindcss/vite';
 
 export default defineConfig({
@@ -14,7 +15,10 @@ export default defineConfig({
     // Default to compile-time images; switch to 'passthrough' or 'cloudflare' if desired.
     imageService: 'compile',
   }),
-  integrations: [react({ include: ['**/islands/**'] })],
+  integrations: [
+    react({ include: ['**/islands/**'] }),
+    sitemap(),
+  ],
   vite: {
     plugins: [tailwindcss()],
     ssr: {
