@@ -21,8 +21,7 @@ export default defineConfig({
       configPath: 'wrangler.jsonc',
       persist: { path: './.wrangler/state/v3' },
     },
-    // Default to compile-time images; switch to 'passthrough' or 'cloudflare' if desired.
-    imageService: 'compile',
+    imageService: 'passthrough',
   }),
   integrations: [
     react({ include: ['**/islands/**'] }),
@@ -30,16 +29,8 @@ export default defineConfig({
   ],
   vite: {
     plugins: [tailwindcss()],
-    resolve: {
-      alias: {
-        'react-dom/server': 'react-dom/server.edge',
-      },
-    },
+    resolve: {},
     build: {
-      minify: true,
-      cssCodeSplit: true,
-      assetsInlineLimit: 4096,
-      sourcemap: false,
       rollupOptions: {
         output: {
           chunkFileNames: '_astro/[name].[hash].js',
@@ -47,8 +38,6 @@ export default defineConfig({
         },
       },
     },
-    ssr: {
-      external: ['node:buffer', 'node:crypto'],
-    },
+    ssr: {},
   },
 });
